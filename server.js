@@ -1,11 +1,12 @@
 // Require in what we need
 
+
 const ListPrompt = require("inquirer/lib/prompts/list");
 
 
 
 
-// Inital question
+// Array for the inital question
 const initialQuestion = [
     {
         type: "list",
