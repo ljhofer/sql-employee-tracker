@@ -3,6 +3,9 @@
 -- View all employees --
 SELECT * FROM employee;
 
+-- View all managers with ids--
+SELECT id, first_name, last_name FROM employee WHERE manager_id IS NULL;
+
 -- Add employee --
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
     VALUES 

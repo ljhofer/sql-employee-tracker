@@ -81,7 +81,7 @@ viewAllEmployees = () => {
 
  // Adds an employee to the database
 addEmployee = () => {
-
+    // Creates a promise for quering the database for current roles
     const getRolesFromDB = new Promise( (resolve, reject) => {
         db.query(`SELECT title FROM role`, (err, res) => {
             if (err) return res.status(400).console.log(err)
@@ -99,8 +99,26 @@ addEmployee = () => {
         })
     })
 
-    getRolesFromDB
-    .then( roleTitles => {
+    const getManagersFromDB = new Promise( (resolve, reject) => {
+        db.query('SELECT first_name, last_name, id FROM employee WHERE manager_id IS NULL', (err, res) => {
+            
+            if (err) return res.status(400).console.log(err)
+
+            let managers = res.map(function(manager) {
+                return manager.first_name + " " + manager.last_name;
+            })
+            if (managers) {
+                resolve(managers)
+            } else {
+                reject("Something went wrong");
+            }
+        })
+    })
+    
+    
+    // Calls the promise function incorporates the data from query into next set of questions
+    Promise.all([getRolesFromDB, getManagersFromDB])
+    .then((values) => {
         const addEmployeeQuestions = [
             {
                 type: "input",
@@ -116,15 +134,30 @@ addEmployee = () => {
                 type: "list",
                 message: "What is the employee's role?",
                 name: "employeeRole",
-                choices: roleTitles
+                choices: values[0]
+            },
+            {
+                type: "list",
+                message: "Who is the employee's manager?",
+                name: "employeeManager",
+                choices: values[1]
             },
         ]
 
+        // Prompts the user for information about the new employee
         inquirer
             .prompt(addEmployeeQuestions)
 
             .then(response => {
-                console.log(response);
+                console.log(response.firstName);
+                
+                // grab responses
+
+                //do db query for insert statements
+                db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, [response.first_name, response.last_name, response.employeeRole, resonse.employeeManager], (err, results) => {
+                    if (err) return res.status(400).json(err);
+                    res.json("Success!");
+                } )
             })
     })
     .catch( err => 
