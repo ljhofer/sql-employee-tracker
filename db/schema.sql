@@ -1,9 +1,9 @@
 -- Creates new database --
-DROP DATABASE IF EXISTS business_db;
-CREATE DATABASE business_db;
+DROP DATABASE IF EXISTS farmsanctuary_db;
+CREATE DATABASE farmsanctuary_db;
 
 -- Uses business_db --
-USE business_db;
+USE farmsanctuary_db;
 
 -- Creates department table -- 
 CREATE TABLE department (
