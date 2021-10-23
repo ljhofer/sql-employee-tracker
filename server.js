@@ -26,10 +26,7 @@ const initialQuestion = [
     }
 ]
 
-const addEmployeeQuestions = [
 
-
-]
 
 const addRoleQuestions = [
 
@@ -38,7 +35,7 @@ const addRoleQuestions = [
 
 const addDepartmentQuestions = [
 
-    
+
 ]
 // Starts app by calling intial question
 start = () => {
@@ -85,6 +82,53 @@ viewAllEmployees = () => {
  // Adds an employee to the database
 addEmployee = () => {
 
+    const getRolesFromDB = new Promise( (resolve, reject) => {
+        db.query(`SELECT title FROM role`, (err, res) => {
+            if (err) return res.status(400).console.log(err)
+            // let currentRoles = res.body.title;
+            
+            let roleTitles = res.map(function(results) {
+                return results.title; 
+            })
+
+            if (roleTitles) {
+                resolve(roleTitles)
+            } else {
+                reject("Something went wrong");
+            }
+        })
+    })
+
+    getRolesFromDB
+    .then( roleTitles => {
+        const addEmployeeQuestions = [
+            {
+                type: "input",
+                message: "What is the employee's first name?",
+                name: "firstName"
+            },
+            {
+                type: "input",
+                message: "What is the employee's last name?",
+                name: "lastName"
+            },
+            {
+                type: "list",
+                message: "What is the employee's role?",
+                name: "employeeRole",
+                choices: roleTitles
+            },
+        ]
+
+        inquirer
+            .prompt(addEmployeeQuestions)
+
+            .then(response => {
+                console.log(response);
+            })
+    })
+    .catch( err => 
+        console.log(err))   
 };
 
 updateEmployeeRole = () => {
