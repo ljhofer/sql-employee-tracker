@@ -16,29 +16,20 @@ const db = mysql.createConnection (
 );
 
 
-// Array for the inital question
-const initialQuestion = [
-    {
-        type: "list",
-        message: "What would you like to do?",
-        name: "initQuestion",
-        choices: ["View All Employees", "Add Employee", "Update Employee Role", "View All Roles", "Add Role", "View All Departments", "Add Department", "Exit Application"]
-    }
-]
-
-
-
-const addRoleQuestions = [
-
-
-]
-
-const addDepartmentQuestions = [
-
-
-]
 // Starts app by calling intial question
 start = () => {
+
+    // Array for the inital question
+    const initialQuestion = [
+        {
+            type: "list",
+            message: "What would you like to do?",
+            name: "initQuestion",
+            choices: ["View All Employees", "Add Employee", "Update Employee Role", "View All Roles", "Add Role", "View All Departments", "Add Department", "Exit Application"]
+        }
+    ]
+
+    // Prompts user with inital questions
     inquirer
         .prompt(initialQuestion)
 
@@ -73,7 +64,7 @@ start = () => {
 // Shows all employees in the database
 viewAllEmployees = () => {
     db.query(`SELECT * FROM employee`, (err, res) => {
-        if (err) return res.status(400).console.log(err)
+        // if (err) return res.status(400).console.log(err)
         console.table(res);
         start();
     })
@@ -84,7 +75,7 @@ addEmployee = () => {
     // Creates a promise for querying the database for current roles
     const getRolesFromDB = new Promise( (resolve, reject) => {
         db.query(`SELECT title, id FROM role`, (err, res) => {
-            if (err) return res.status(400).console.log(err)
+            // if (err) return res.status(400).console.log(err)
             
             if (res) {
                 resolve(res)
@@ -98,7 +89,7 @@ addEmployee = () => {
     const getManagersFromDB = new Promise( (resolve, reject) => {
         db.query('SELECT first_name, last_name, id FROM employee WHERE manager_id IS NULL', (err, res) => {
             
-            if (err) return res.status(400).console.log(err)
+            // if (err) return res.status(400).console.log(err)
 
             if (res) {
                 resolve(res)
@@ -109,7 +100,7 @@ addEmployee = () => {
     })
     
 
-    // Calls the promise function incorporates the data from query into next set of questions
+    // Calls the promise functions 
     Promise.all([getRolesFromDB, getManagersFromDB])
     .then((values) => {
 
@@ -157,7 +148,7 @@ addEmployee = () => {
                 let chosenRole = response.employeeRole;
                 let chosenManager = response.employeeManager;
                                 
-                // Iterates over the roles to find the index vlaue for the role selected
+                // Iterates over the roles to find the index valaue for the role selected
                 let roleIndexNumber = values[0].findIndex(function(role) {
                     return chosenRole === role.title;
                 })  
@@ -175,7 +166,7 @@ addEmployee = () => {
          
                 // Queries with insert statement to add employee to database
                 db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, [response.firstName, response.lastName, thisRoleId, thisManagerId], (err, results) => {
-                    if (err) return res.status(400).json(err);
+                    // if (err) return res.status(400).json(err);
 
                     console.log("Added " + response.firstName + " " + response.lastName + " to the database.")
                     
@@ -185,7 +176,7 @@ addEmployee = () => {
             })
     })
     .catch( err => 
-        console.log(err))   
+        console.log(err));  
 };
 
 // Updates an employee's role in the database
@@ -196,7 +187,7 @@ updateEmployeeRole = () => {
 // Shows all roles in the database
 viewAllRoles = () => {
     db.query(`SELECT * FROM role`, (err, res) => {
-        if (err) return res.status(400).console.log(err)
+        // if (err) return res.status(400).console.log(err)
         console.table(res);
         start();
     })
@@ -204,13 +195,83 @@ viewAllRoles = () => {
 
 // Adds a role to the database
 addRole = () => {
+    
+    // Creates a promise for querying the database for current departments
+    const getDepartmentsFromDB = new Promise( (resolve, reject) => {
+        db.query(`SELECT name, id FROM department`, (err, res) => {
+            // if (err) return res.status(400).console.log(err)
 
+            if (res) {
+                resolve(res)
+            } else {
+                reject("Something went wrong");
+            }
+        })
+    })
+    
+    // Calls the promise function
+    getDepartmentsFromDB
+    .then((values) => {
+
+        // Creates a variable of the current departments to pass into the next set of questions
+        let departments = values.map(function(results) {
+            return results.name;
+        })        
+
+        // Defines the questions for adding a role and sets the answer options in department question equal to the list of current departments
+        const addRoleQuestions = [
+            {
+                type: "input",
+                message: "What is the name of the role?",
+                name: "roleName"
+            },
+            {
+                type: "input",
+                message: "What is the salary of the role?",
+                name: "roleSalary"
+            },
+            {
+                type: "list",
+                message: "Which department does the role belong to?",
+                name: "roleDepartment",
+                choices: departments
+            },
+        ]
+
+        inquirer
+            .prompt(addRoleQuestions)
+
+            .then(response => {
+
+                let chosenDepartment = response.roleDepartment;
+
+                // Iterates over the department to find the index value of the chosen department
+                let departmentIndexNumber = values.findIndex(function(department){
+                    return chosenDepartment === department.name;
+                })
+
+                // Sets the value of the department id number for the department chosen
+                let thisDepartmentId = values[departmentIndexNumber].id;
+
+                // Queries with insert statement to add role to the database
+                db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, [response.roleName, response.roleSalary, thisDepartmentId], (err, res) => {
+                    // if (err) return res.status(400).json(err);
+
+                    console.log("Added " + response.roleName + " to the database");
+
+                    // Calls the start function
+                    start();
+                })
+            })
+    })
+    .catch( err =>
+        console.log(err));   
 };
 
 // Shows all departments in the database
 viewAllDepartments = () => {
     db.query(`SELECT * FROM department`, (err, res) => {
-        if (err) return res.status(400).console.log(err)
+        // if (err) return res.status(400).console.log(err)
         console.table(res);
         start();
     })
@@ -218,7 +279,29 @@ viewAllDepartments = () => {
 
 // Adds a department to the database
 addDepartment = () => {
+    
+    const addDepartmentQuestions = [
+        {
+            type: "input",
+            message: "What is the name of the department?",
+            name: "departmentName"
+        },
+    ]
 
+    inquirer
+        .prompt(addDepartmentQuestions)
+
+        .then(response => {
+
+            // Queries with insert statement to add role to the database
+            db.query(`INSERT INTO department (name) VALUES (?)`, (response.departmentName), (err, res) => {
+                // if (err) return res.status(400).console.log(err) 
+                console.log("Added " + response.departmentName + " to the database");
+
+                // Calls start function
+                start();
+            })
+        })
 };
 
 
