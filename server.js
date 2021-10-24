@@ -83,7 +83,7 @@ addEmployee = () => {
                 reject("Something went wrong");
             }
         })
-    })
+    });
 
     // Creates a promise for querying the database for current managers
     const getManagersFromDB = new Promise( (resolve, reject) => {
@@ -97,7 +97,7 @@ addEmployee = () => {
                 reject("Something went wrong");
             }
         })
-    })
+    });
     
 
     // Calls the promise functions 
@@ -111,7 +111,8 @@ addEmployee = () => {
 
         // Creates a varible of the current managers to pas into the questions
         let managers = values[1].map(function(manager) {
-            return manager.first_name + " " + manager.last_name;  })
+            return manager.first_name + " " + manager.last_name; 
+        })
 
         // Defines the add employee questions and sets choices equal to the current values in the database
         const addEmployeeQuestions = [
@@ -181,8 +182,118 @@ addEmployee = () => {
 
 // Updates an employee's role in the database
 updateEmployeeRole = () => {
+    // Creates a promise for querying the database for current employees
+    const getEmployeesFromDB = new Promise( (resolve, reject) => { 
+        db.query(`SELECT first_name, last_name, id FROM employee`, (err, res) => {
+            // if (err) return res.status(400).console.log(err)
 
-};
+            if (res) {
+                resolve(res)
+            } else {
+                reject("Something went wrong");
+            }
+        })
+    });
+
+    // Creates a promise for querying the database for current roles
+    const getRolesFromDB = new Promise( (resolve, reject) => {
+        db.query(`SELECT title, id FROM role`, (err, res) => {
+            // if (err) return res.status(400).console.log(err)
+            
+            if (res) {
+                resolve(res)
+            } else {
+                reject("Something went wrong");
+            }
+        })
+    });
+
+    Promise.all([getEmployeesFromDB, getRolesFromDB])
+    .then((values) => {
+        
+        // Creates a variable of the current employees
+        let currentEmployees = values[0].map(function(employee) {
+            return employee.first_name + " " + employee.last_name;
+        })
+
+        let currentRoles = values[1].map(function(employee) {
+            return employee.title;
+        })
+
+        // Defines the update role questions and sets the answers choices equal to the current values in the database
+        const updateEmployeeRoleQuestions = [
+            {
+                type: "list",
+                message: "Which employee's role would you like to update?",
+                name: "employeeToUpdate",
+                choices: currentEmployees
+            },
+            {
+                type: "list",
+                message: "Which role would you like to assign to chosen employee?",
+                name: "updatedRole",
+                choices: currentRoles
+            }
+        ]
+
+        // Prompts the user for the information about the role to be updated
+        inquirer    
+            .prompt(updateEmployeeRoleQuestions)
+
+            .then(response => { 
+
+                let chosenEmployee = response.employeeToUpdate;
+                let chosenRole = response.updatedRole;
+
+                // Iterates over the employees to find the index value of the employee being updated
+                let employeeIndexNumber = values[0].findIndex(function(employee) {
+                    return chosenEmployee === employee.first_name + " " + employee.last_name;
+                })
+
+                // Sets the value of the employee id number for the employee selected
+                let thisEmployeeId = values[0][employeeIndexNumber].id;
+
+
+                // Iterates over the roles to find the index value of the role selected
+                let roleIndexNumber = values[1].findIndex(function(role){
+                    return chosenRole === role.title;
+                })
+
+                // Set the value of role id number to the role selected
+                let thisRoleId = values[1][roleIndexNumber].id;
+
+                // Queries with update statement to update employee's role in database
+                db.query(`UPDATE employee SET role_id = (?) WHERE id= (?)`, [thisRoleId, thisEmployeeId], (err, results) => {
+                    // if (err) return res.status(400).json(err);
+
+                    console.log("Updated " + chosenEmployee + " in the database.")
+                    
+                    // Calls the start function
+                    start();
+
+
+                })
+
+                
+
+
+
+
+
+
+            })
+
+
+
+
+
+
+    })
+
+
+
+
+}
 
 // Shows all roles in the database
 viewAllRoles = () => {
@@ -195,7 +306,6 @@ viewAllRoles = () => {
 
 // Adds a role to the database
 addRole = () => {
-    
     // Creates a promise for querying the database for current departments
     const getDepartmentsFromDB = new Promise( (resolve, reject) => {
         db.query(`SELECT name, id FROM department`, (err, res) => {
@@ -279,7 +389,7 @@ viewAllDepartments = () => {
 
 // Adds a department to the database
 addDepartment = () => {
-    
+    // Array for question
     const addDepartmentQuestions = [
         {
             type: "input",
