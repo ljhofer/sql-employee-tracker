@@ -81,44 +81,48 @@ viewAllEmployees = () => {
 
  // Adds an employee to the database
 addEmployee = () => {
-    // Creates a promise for quering the database for current roles
+    // Creates a promise for querying the database for current roles
     const getRolesFromDB = new Promise( (resolve, reject) => {
-        db.query(`SELECT title FROM role`, (err, res) => {
+        db.query(`SELECT title, id FROM role`, (err, res) => {
             if (err) return res.status(400).console.log(err)
-            // let currentRoles = res.body.title;
             
-            let roleTitles = res.map(function(results) {
-                return results.title; 
-            })
-
-            if (roleTitles) {
-                resolve(roleTitles)
+            if (res) {
+                resolve(res)
             } else {
                 reject("Something went wrong");
             }
         })
     })
 
+    // Creates a promise for querying the database for current managers
     const getManagersFromDB = new Promise( (resolve, reject) => {
         db.query('SELECT first_name, last_name, id FROM employee WHERE manager_id IS NULL', (err, res) => {
             
             if (err) return res.status(400).console.log(err)
 
-            let managers = res.map(function(manager) {
-                return manager.first_name + " " + manager.last_name;
-            })
-            if (managers) {
-                resolve(managers)
+            if (res) {
+                resolve(res)
             } else {
                 reject("Something went wrong");
             }
         })
     })
     
-    
+
     // Calls the promise function incorporates the data from query into next set of questions
     Promise.all([getRolesFromDB, getManagersFromDB])
     .then((values) => {
+
+        // Creates a variable of the current roles to pass into the questions
+        let roleTitles = values[0].map(function(results) {
+            return results.title; 
+        })
+
+        // Creates a varible of the current managers to pas into the questions
+        let managers = values[1].map(function(manager) {
+            return manager.first_name + " " + manager.last_name;  })
+
+        // Defines the add employee questions and sets choices equal to the current values in the database
         const addEmployeeQuestions = [
             {
                 type: "input",
@@ -134,13 +138,13 @@ addEmployee = () => {
                 type: "list",
                 message: "What is the employee's role?",
                 name: "employeeRole",
-                choices: values[0]
+                choices: roleTitles
             },
             {
                 type: "list",
                 message: "Who is the employee's manager?",
                 name: "employeeManager",
-                choices: values[1]
+                choices: managers
             },
         ]
 
@@ -149,21 +153,42 @@ addEmployee = () => {
             .prompt(addEmployeeQuestions)
 
             .then(response => {
-                console.log(response.firstName);
                 
-                // grab responses
+                let chosenRole = response.employeeRole;
+                let chosenManager = response.employeeManager;
+                                
+                // Iterates over the roles to find the index vlaue for the role selected
+                let roleIndexNumber = values[0].findIndex(function(role) {
+                    return chosenRole === role.title;
+                })  
 
-                //do db query for insert statements
-                db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, [response.first_name, response.last_name, response.employeeRole, resonse.employeeManager], (err, results) => {
+                // Sets the value of the role id number for the role selected 
+                let thisRoleId = values[0][roleIndexNumber].id;
+
+                 // Iterates over managers to find the index vlaue for the manager selected
+                 let managerIndexNumber = values[1].findIndex(function(manager) {
+                    return chosenManager === manager.first_name + " " + manager.last_name;
+                })  
+
+                // Sets the value of the manager id number for the manager selected 
+                let thisManagerId = values[1][managerIndexNumber].id;
+         
+                // Queries with insert statement to add employee to database
+                db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, [response.firstName, response.lastName, thisRoleId, thisManagerId], (err, results) => {
                     if (err) return res.status(400).json(err);
-                    res.json("Success!");
-                } )
+
+                    console.log("Added " + response.firstName + " " + response.lastName + " to the database.")
+                    
+                    // Calls the start function
+                    start();
+                })
             })
     })
     .catch( err => 
         console.log(err))   
 };
 
+// Updates an employee's role in the database
 updateEmployeeRole = () => {
 
 };
@@ -191,7 +216,7 @@ viewAllDepartments = () => {
     })
 };
 
-// Adds adepartment to the database
+// Adds a department to the database
 addDepartment = () => {
 
 };
