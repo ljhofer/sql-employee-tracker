@@ -270,29 +270,9 @@ updateEmployeeRole = () => {
                     
                     // Calls the start function
                     start();
-
-
                 })
-
-                
-
-
-
-
-
-
             })
-
-
-
-
-
-
     })
-
-
-
-
 }
 
 // Shows all roles in the database
