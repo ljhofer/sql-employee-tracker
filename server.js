@@ -277,7 +277,7 @@ updateEmployeeRole = () => {
 
 // Shows all roles in the database
 viewAllRoles = () => {
-    db.query(`SELECT * FROM role`, (err, res) => {
+    db.query(`SELECT title, role.id AS role_id, department.name AS department, salary FROM role JOIN department ON role.department_id = department.id`, (err, res) => {
         // if (err) return res.status(400).console.log(err)
         console.table(res);
         start();

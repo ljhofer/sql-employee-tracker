@@ -1,7 +1,10 @@
 
 
 -- View all employees --
-SELECT * FROM employee;
+SELECT employee.id, first_name, last_name, title, department.name AS department, salary, manager_id
+FROM employee
+JOIN role ON employee.role_id = role.id
+JOIN department ON role.department_id = department.id;
 
 -- View all managers with ids--
 SELECT id, first_name, last_name FROM employee WHERE manager_id IS NULL;
@@ -17,7 +20,9 @@ SET role_id =
 WHERE id = ;
 
 -- View all roles --
-SELECT * role;
+SELECT title, role.id AS role_id, department.name AS department, salary
+FROM role
+JOIN department ON role.department_id = department.id;
 
 -- Add role --
 INSERT INTO role (title, salary, department_id)
@@ -31,3 +36,4 @@ SELECT * department;
 INSERT INTO department (name)
     VALUES
         (name);
+
