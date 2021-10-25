@@ -57,7 +57,7 @@ start = () => {
             else if (response.initQuestion === "Add Department"){
                 addDepartment();
             }
-            else return; 
+            else db.end(); 
         })
 }
 

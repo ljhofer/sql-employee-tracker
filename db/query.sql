@@ -1,10 +1,5 @@
 
 -- View all employees --
-SELECT employee.id, first_name, last_name, title, department.name AS department, salary, manager_id
-FROM employee
-JOIN role ON employee.role_id = role.id
-JOIN department ON role.department_id = department.id;
-
 SELECT employee.id, employee.first_name, employee.last_name, title, department.name AS department, salary, CONCAT(e.first_name, ' ', e.last_name) AS manager
 FROM employee
 JOIN role ON employee.role_id = role.id
