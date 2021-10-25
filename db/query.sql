@@ -1,5 +1,4 @@
 
-
 -- View all employees --
 SELECT employee.id, first_name, last_name, title, department.name AS department, salary, manager_id
 FROM employee
