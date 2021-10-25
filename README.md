@@ -29,7 +29,7 @@ Then choose an option according to your needs.
 ![Picture of first question in the command line](./assets/questions.png)
 
 <!-- Change this with a video of this program -->
-[Click here for a video showing how to use the program.](https://drive.google.com/file/d/11LYdCyM8oht5Igig2Y0dc03oUKxzTAHL/view)
+[Click here for a video showing how to use the program.](https://drive.google.com/file/d/15V4Y7_4i3g3oB9Sifq2Elmjk4v4ALOM8/view)
 
 ## License
 This project licensed under the [MIT License](https://opensource.org/licenses/MIT).
