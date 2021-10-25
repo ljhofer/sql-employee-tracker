@@ -63,7 +63,8 @@ start = () => {
 
 // Shows all employees in the database
 viewAllEmployees = () => {
-    db.query(`SELECT * FROM employee`, (err, res) => {
+    db.query(`SELECT employee.id, employee.first_name, employee.last_name, title, department.name AS department, salary, CONCAT(e.first_name, ' ', e.last_name) AS manager
+FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee e ON employee.manager_id = e.id;`, (err, res) => {
         if (err) {
             return console.log(err);
           }
