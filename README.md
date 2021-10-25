@@ -16,17 +16,17 @@ I have created a command line application that allows uses to interact any sever
 - [Questions](#questions)
 
 ## Installation
-This application requires Node and users should run "npm install" in their command line prior to use. 
+This application requires Node and users should run "npm install" in their command line prior to use. In addition, use the schema.sql file to build your initial database prior to using the command line tool. 
 
 ## Usage
 After installing Node and running "npm install" users will open their command line and initiate the program by typing "node index.js". 
 <!-- Change this with shot of this program -->
-![Picture of inital command line entry](./assets/images/commandline.png)
+![Picture of inital command line entry](./assets/initialcommandline.png)
 
 Then choose an option according to your needs. 
 
 <!-- Change this with shot of this program -->
-![Picture of first question in the command line](./assets/images/questions.png)
+![Picture of first question in the command line](./assets/questions.png)
 
 <!-- Change this with a video of this program -->
 [Click here for a video showing how to use the program.](https://drive.google.com/file/d/11LYdCyM8oht5Igig2Y0dc03oUKxzTAHL/view)

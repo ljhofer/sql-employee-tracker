@@ -57,7 +57,7 @@ start = () => {
             else if (response.initQuestion === "Add Department"){
                 addDepartment();
             }
-            else db.end(); 
+            else db.end();
         })
 }
 
@@ -112,6 +112,9 @@ addEmployee = () => {
             return manager.first_name + " " + manager.last_name; 
         })
 
+        // Adds an option to not select a manager when a manager is added
+        managers.push("This employee does not require a manager.");
+
         // Defines the add employee questions and sets choices equal to the current values in the database
         const addEmployeeQuestions = [
             {
@@ -161,7 +164,8 @@ addEmployee = () => {
                 })  
 
                 // Sets the value of the manager id number for the manager selected 
-                let thisManagerId = values[1][managerIndexNumber].id;
+                let thisManagerId = (managerIndexNumber === -1) ? null : values[1][managerIndexNumber].id;
+
          
                 // Queries with insert statement to add employee to database
                 db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, [response.firstName, response.lastName, thisRoleId, thisManagerId], (err, results) => {
