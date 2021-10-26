@@ -15,12 +15,12 @@ INSERT INTO role (title, salary, department_id)
            ("Nursery Intern", 30000, 3);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-    VALUES ("Julie", "Knopp", 1, null),
-           ("Laura", "Hofer", 2, null),
-           ("Mark", "Hiner", 3, null),
-           ("Jessica", "Davies-Lopez", 4, 1),
-           ("Bridget", "Finnegan Forbes", 5, 2),
-           ("Kurt", "Pederson", 6, 3),
-           ("Minnie", "Hofer", 7, 1),
-           ("Huxley", "Hofer", 8, 2),
-           ("Marian", "Maciej-Hiner", 9, 3);
+    VALUES ("Sandy", "Knopp", 1, null),
+           ("Yoselin", "Hofer", 2, null),
+           ("Jamal", "Smith", 3, null),
+           ("Julieta", "Lopez", 4, 1),
+           ("Katie", "Finnegan", 5, 2),
+           ("Jesus", "Gomez", 6, 3),
+           ("Minnie", "Adichie", 7, 1),
+           ("Huxley", "Hiner", 8, 2),
+           ("Amanda", "Kim", 9, 3);
